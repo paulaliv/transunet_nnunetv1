@@ -12,6 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+import numpy as np
 
 import argparse
 import os
@@ -140,9 +141,22 @@ def main():
     parser.add_argument("--merge_femur", default=False, action="store_true", help="merge class-15 and class-16 (head of femur) during training")
     parser.add_argument("--is_sigmoid", default=False, action="store_true", help="is_sigmoid for output instead of softmax")
     parser.add_argument('--max_loss_cal', default='', type=str, help="v0, v1")
-    
-    
-    
+
+    local_rank = int(os.environ.get("LOCAL_RANK", -1))
+    world_rank = int(os.environ.get("RANK", -1))
+
+    print(f"Process with LOCAL_RANK={local_rank}, RANK={world_rank}")
+    print(f"Python executable: {sys.executable}")
+    try:
+        import numpy
+        print(f"Numpy version: {numpy.__version__}")
+    except ImportError:
+        print("Numpy import failed!")
+
+    # Optionally, test numpy + torch interaction
+    import torch
+    a = torch.from_numpy(np.ones((2, 2)))
+    print(f"torch.from_numpy test tensor: {a}")
     # debug
 
     args_config, _ = parser.parse_known_args() # expect return 'remaining' standing for the namspace from launch? but not...
